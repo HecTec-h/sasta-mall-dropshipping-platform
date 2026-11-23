@@ -1,10 +1,10 @@
+
 const express = require("express");
 const bcrypt = require("bcrypt");
 
-const db = require("../database");
+const db = require("../database-postgres");
 
 const router = express.Router();
-
 
 // ADMIN LOGIN
 router.post("/login", async (req, res) => {
@@ -18,7 +18,7 @@ router.post("/login", async (req, res) => {
             });
         }
 
-        const admin = db.prepare(`
+        const result = await db.query(`
             SELECT
                 id,
                 username,
@@ -26,10 +26,12 @@ router.post("/login", async (req, res) => {
                 name,
                 active
             FROM admins
-            WHERE username = ?
-        `).get(username);
+            WHERE username = $1
+        `, [username]);
 
-        if (!admin || admin.active !== 1) {
+        const admin = result.rows[0];
+
+        if (!admin || Number(admin.active) !== 1) {
             return res.status(401).json({
                 success: false,
                 message: "Invalid admin credentials."
@@ -62,8 +64,7 @@ router.post("/login", async (req, res) => {
         });
 
     } catch (error) {
-        console.error("Admin login error:");
-        console.error(error.message);
+        console.error("Admin login error:", error.message);
 
         return res.status(500).json({
             success: false,
@@ -71,7 +72,6 @@ router.post("/login", async (req, res) => {
         });
     }
 });
-
 
 // ADMIN LOGOUT
 router.post("/logout", (req, res) => {
@@ -84,7 +84,14 @@ router.post("/logout", (req, res) => {
     req.session.adminId = null;
     req.session.adminUsername = null;
 
-    req.session.save(() => {
+    req.session.save((error) => {
+        if (error) {
+            return res.status(500).json({
+                success: false,
+                message: "Could not logout."
+            });
+        }
+
         res.json({
             success: true,
             message: "Admin logged out."
@@ -92,39 +99,49 @@ router.post("/logout", (req, res) => {
     });
 });
 
-
 // CHECK ADMIN LOGIN
-router.get("/me", (req, res) => {
-    if (!req.session || !req.session.adminId) {
+router.get("/me", async (req, res) => {
+    try {
+        if (!req.session || !req.session.adminId) {
+            return res.json({
+                loggedIn: false
+            });
+        }
+
+        const result = await db.query(`
+            SELECT
+                id,
+                username,
+                name
+            FROM admins
+            WHERE id = $1
+              AND active = 1
+        `, [req.session.adminId]);
+
+        const admin = result.rows[0];
+
+        if (!admin) {
+            req.session.adminId = null;
+            req.session.adminUsername = null;
+
+            return res.json({
+                loggedIn: false
+            });
+        }
+
         return res.json({
-            loggedIn: false
+            loggedIn: true,
+            admin
+        });
+
+    } catch (error) {
+        console.error("Admin session check failed:", error.message);
+
+        return res.status(500).json({
+            success: false,
+            message: "Server error."
         });
     }
-
-    const admin = db.prepare(`
-        SELECT
-            id,
-            username,
-            name
-        FROM admins
-        WHERE id = ?
-          AND active = 1
-    `).get(req.session.adminId);
-
-    if (!admin) {
-        req.session.adminId = null;
-        req.session.adminUsername = null;
-
-        return res.json({
-            loggedIn: false
-        });
-    }
-
-    return res.json({
-        loggedIn: true,
-        admin: admin
-    });
 });
-
 
 module.exports = router;

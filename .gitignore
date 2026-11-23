@@ -1,28 +1,38 @@
 # Dependencies
 node_modules/
 
-# Local environment and secrets
+# Environment variables and secrets
 .env
 .env.*
 !.env.example
 
-# Runtime database and SQLite sidecar files
-database/*.db
-database/*.db-*
-database/*.sqlite
-database/*.sqlite-*
+# Local SQLite databases, backups and dumps
+database/
+*.db
+*.db-*
+*.sqlite
+*.sqlite-*
+*.dump
+*.backup
+*.bak
 
-# Customer payment receipts and private support files
+# Runtime uploads and private customer files
 public/uploads/receipts/
 private-support-uploads/
+# Existing tracked catalog media remain in Git; ignore newly uploaded media.
+public/uploads/products/
 
-# Logs and operating-system/editor files
+# Logs
 *.log
 npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# Operating system / editor
 .DS_Store
 Thumbs.db
 .vscode/
 .idea/
 
-# Test/coverage output
+# Test and coverage output
 coverage/

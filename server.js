@@ -1,11 +1,11 @@
+
 require("dotenv").config();
 
 const express = require("express");
 const path = require("path");
 const session = require("express-session");
-const multer = require("multer");
-
-const db = require("./database");
+const pgSession = require("connect-pg-simple")(session);
+const db = require("./database-postgres");
 
 const categoriesRouter = require("./routes/categories");
 const productsRouter = require("./routes/products");
@@ -16,14 +16,30 @@ const adminProductsRouter = require("./routes/admin-products");
 const adminOrdersRouter = require("./routes/admin-orders");
 const adminCategoriesRouter = require("./routes/admin-categories");
 const supportRouter = require("./routes/support");
+const paymentSettingsRouter = require("./routes/payment-settings");
 
 const app = express();
-const PORT = Number(process.env.PORT || 3000);
-const SESSION_SECRET = process.env.SESSION_SECRET;
 
-if (!SESSION_SECRET) {
-    console.error("SESSION_SECRET is missing. Copy .env.example to .env and set a strong random value.");
-    process.exit(1);
+const PORT = process.env.PORT || 3000;
+const isProduction = process.env.NODE_ENV === "production";
+
+if (!process.env.SESSION_SECRET) {
+    if (isProduction) {
+        throw new Error("SESSION_SECRET must be configured in production.");
+    }
+
+    console.warn("WARNING: Using development session secret.");
+}
+
+const SESSION_SECRET =
+    process.env.SESSION_SECRET || "sasta-mall-development-secret-change-this";
+
+// =========================================
+// PROXY CONFIGURATION
+// =========================================
+
+if (isProduction) {
+    app.set("trust proxy", 1);
 }
 
 // =========================================
@@ -42,63 +58,25 @@ app.use(express.urlencoded({
 
 app.use(
     session({
+        store: new pgSession({
+            pool: db,
+            tableName: "user_sessions",
+            createTableIfMissing: true,
+            ttl: 7 * 24 * 60 * 60
+        }),
+
         secret: SESSION_SECRET,
         resave: false,
         saveUninitialized: false,
+
         cookie: {
             httpOnly: true,
+            secure: isProduction,
             sameSite: "lax",
-            secure: process.env.NODE_ENV === "production",
             maxAge: 1000 * 60 * 60 * 24 * 7
         }
     })
 );
-
-// =========================================
-// RECEIPT UPLOAD
-// =========================================
-
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(
-            null,
-            path.join(
-                __dirname,
-                "public/uploads/receipts"
-            )
-        );
-    },
-
-    filename: function (req, file, cb) {
-        const uniqueName =
-            Date.now() +
-            "-" +
-            Math.round(Math.random() * 1E9) +
-            path.extname(file.originalname);
-
-        cb(null, uniqueName);
-    }
-});
-
-const upload = multer({
-    storage: storage,
-    limits: {
-        fileSize: 5 * 1024 * 1024
-    },
-
-    fileFilter: function (req, file, cb) {
-        if (file.mimetype.startsWith("image/")) {
-            cb(null, true);
-        } else {
-            cb(
-                new Error(
-                    "Only image files are allowed."
-                )
-            );
-        }
-    }
-});
-
 // =========================================
 // SERVE WEBSITE
 // =========================================
@@ -129,7 +107,9 @@ app.use("/api/admin/auth", adminAuthRouter);
 app.use("/api/admin/products", adminProductsRouter);
 app.use("/api/admin/orders", adminOrdersRouter);
 app.use("/api/admin/categories", adminCategoriesRouter);
+
 app.use("/api/support", supportRouter);
+app.use("/api/payment-settings", paymentSettingsRouter);
 
 // =========================================
 // HOME
@@ -143,14 +123,44 @@ app.get("/", (req, res) => {
 // DATABASE TEST
 // =========================================
 
-app.get("/api/test-db", (req, res) => {
-    const result = db.prepare(
-        "SELECT 1 AS working"
-    ).get();
+app.get("/api/test-db", async (req, res) => {
+    try {
+        const result = await db.query(
+            "SELECT 1 AS working"
+        );
 
-    res.json({
-        success: true,
-        database: result.working === 1
+        res.json({
+            success: true,
+            database: Number(result.rows[0].working) === 1
+        });
+
+    } catch (error) {
+        console.error("Database test failed:", error.message);
+
+        res.status(500).json({
+            success: false,
+            database: false,
+            error: "Database connection failed."
+        });
+    }
+});
+
+// =========================================
+// ERROR HANDLER
+// =========================================
+
+app.use((err, req, res, next) => {
+    console.error("Server error:", err.message);
+
+    if (res.headersSent) {
+        return next(err);
+    }
+
+    res.status(err.status || 500).json({
+        success: false,
+        error: isProduction
+            ? "Something went wrong."
+            : err.message
     });
 });
 

@@ -1,27 +1,26 @@
 {
   "name": "sasta-mall",
   "version": "1.0.0",
-  "description": "Open-source e-commerce application built with Node.js, Express, SQLite and vanilla JavaScript.",
-  "main": "server.js",
+  "description": "",
+  "main": "index.js",
   "scripts": {
-    "start": "node server.js",
-    "db:setup": "node setup-database.js",
-    "admin:create": "node create-admin.js",
-    "admin:reset": "node reset-admin-password.js"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
-  "license": "MIT",
+  "license": "ISC",
   "type": "commonjs",
   "dependencies": {
     "bcrypt": "^6.0.0",
     "better-sqlite3": "^13.0.3",
+    "connect-pg-simple": "^10.0.0",
     "dotenv": "^18.0.6",
     "express": "^5.2.1",
     "express-session": "^1.19.0",
-    "multer": "^2.4.0"
+    "multer": "^2.4.0",
+    "pg": "^8.23.1"
   },
   "engines": {
-    "node": ">=20.0.0"
+    "node": ">=22.0.0"
   }
 }

@@ -1,99 +1,77 @@
-# 🛍️ Sasta Mall
+# Sasta Mall — Dropshipping Platform
 
-**An Open-Source Dropshipping Platform**
+A full-stack dropshipping storefront and administration platform built with **Node.js, Express, PostgreSQL, and vanilla HTML/CSS/JavaScript**.
 
-Sasta Mall is an open-source dropshipping starter platform built with **Node.js, Express.js, SQLite, HTML, CSS, and JavaScript**.
+Sasta Mall includes a customer-facing storefront and an admin panel for managing products, categories, customers, orders, tracking, payment instructions, and customer support.
 
-It provides a customer-facing online storefront and an administration panel for managing products, categories, customers, orders, order tracking, and customer support.
+> **Project status:** The local PostgreSQL migration and the main customer/admin flows have been tested by the project maintainer. This repository is a self-hostable starting point; production deployment still requires secure environment configuration and persistent storage for uploaded media.
 
-The project is designed to provide a foundation for developers who want to explore, customize, and extend an e-commerce and dropshipping platform.
+## Screenshots
 
----
+### Storefront
+![Sasta Mall home page](https://github.com/user-attachments/assets/9dc5db41-2545-4423-a9c9-45537ea32979)
 
-## 📸 Project Screenshots
+### Product catalogue
+![Sasta Mall product catalogue](https://github.com/user-attachments/assets/dd0c75a9-d57f-4008-84eb-48129947a811)
 
-Explore the Sasta Mall interface:
+### Customer dashboard
+![Sasta Mall customer dashboard](https://github.com/user-attachments/assets/f8d983e5-7d7e-4b43-b364-2e7ca56bb16b)
 
-### 🏠 Home Page
-<img width="1243" height="584" alt="Image" src="https://github.com/user-attachments/assets/9dc5db41-2545-4423-a9c9-45537ea32979" />
+### Admin dashboard
+![Sasta Mall admin dashboard](https://github.com/user-attachments/assets/c11e261a-322d-47ce-b9d0-30a77141480c)
 
+### Customer support
+![Sasta Mall customer support chat](https://github.com/user-attachments/assets/06d730f5-ac8c-44c0-9525-f94e1f37712d)
 
-### 🛒 Products Page
-<img width="1260" height="583" alt="product page" src="https://github.com/user-attachments/assets/dd0c75a9-d57f-4008-84eb-48129947a811" />
+## Features
 
-
-### 👤 Customer Dashboard
-<img width="1257" height="581" alt="customer dashboard" src="https://github.com/user-attachments/assets/f8d983e5-7d7e-4b43-b364-2e7ca56bb16b" />
-
-
-### ⚙️ Admin Dashboard
-<img width="1260" height="586" alt="Image" src="https://github.com/user-attachments/assets/c11e261a-322d-47ce-b9d0-30a77141480c" />
-
-
-### 💬 Customer Support Chat
-<img width="1244" height="573" alt="customer support" src="https://github.com/user-attachments/assets/06d730f5-ac8c-44c0-9525-f94e1f37712d" />
-
-
----
-
-## ✨ Features
-
-### Customer Features
-- Customer registration and login
-- Personal customer dashboard
-- Product catalogue and categories
-- Product images and videos
+### Customer storefront
+- Customer registration, login, and logout
+- Product catalogue, categories, and product detail pages
+- Product image/video support
 - Shopping cart and checkout
-- Order history
-- Order status and tracking
-- Delivery address management
-- Customer support chat
-- Screenshot attachments in support conversations
+- Customer dashboard and order history
+- Order status and shipment tracking
+- Configurable payment instructions
+- Customer support chat with attachment support
 
-### Admin Features
-- Admin authentication
-- Admin dashboard
-- Product management
-- Category management
-- Customer management
-- Order management
-- Order status management
-- Order tracking
-- Customer support conversations
-- Customer inquiry management
+### Admin panel
+- Admin authentication and session-based access control
+- Product and category management
+- Customer and order management
+- Order status and shipment tracking management
+- Customer support conversation management and replies
+- Payment method/instruction settings
 
-### Technical Features
-- Node.js and Express.js backend
-- SQLite database
-- Vanilla HTML, CSS, and JavaScript
-- REST API routes
-- Session-based authentication
-- Password hashing with bcrypt
+### Platform and security
+- PostgreSQL database integration (including Neon)
+- PostgreSQL-backed Express sessions using `connect-pg-simple`
+- Password hashing with `bcrypt`
 - Environment-based configuration
+- Parameterized PostgreSQL queries
+- Private support attachment handling
 
----
+## Technology stack
 
-## 🧰 Technologies Used
-
-| Technology | Purpose |
+| Technology | Role |
 |---|---|
-| Node.js | Backend runtime |
-| Express.js | Web application framework |
-| SQLite | Database |
-| better-sqlite3 | SQLite database integration |
-| HTML5 | Website structure |
-| CSS3 | Website styling |
-| JavaScript | Frontend functionality |
-| bcrypt | Password hashing |
-| Git & GitHub | Version control |
+| Node.js | Server runtime |
+| Express 5 | HTTP server and API routes |
+| PostgreSQL | Primary relational database |
+| Neon | Hosted PostgreSQL option |
+| `pg` | PostgreSQL client/pool |
+| `connect-pg-simple` | Persistent session storage |
+| `express-session` | Session-based authentication |
+| `bcrypt` | Password hashing |
+| `multer` | File upload handling |
+| HTML, CSS, JavaScript | Customer and admin interfaces |
 
----
+## Requirements
 
-## 📋 Requirements
-
-- Node.js 20 or newer
-- npm (included with Node.js)
-- Git (optional, for cloning and contributing)
+- Node.js 22 or newer
+- npm
+- A PostgreSQL database (Neon is supported)
+- Git (for cloning)
 
 Check your installed versions:
 
@@ -102,18 +80,14 @@ node --version
 npm --version
 ```
 
----
-
-## 🚀 Installation
+## Getting started
 
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/HassanAziz786/sasta-mall.git
-cd sasta-mall
+git clone https://github.com/Hectec-h/sasta-mall-dropshipping-platform.git
+cd sasta-mall-dropshipping-platform
 ```
-
-Alternatively, download the repository ZIP from GitHub and extract it.
 
 ### 2. Install dependencies
 
@@ -121,7 +95,19 @@ Alternatively, download the repository ZIP from GitHub and extract it.
 npm install
 ```
 
-### 3. Configure environment variables
+### 3. Create a PostgreSQL database
+
+Create a PostgreSQL database. [Neon](https://neon.tech/) can be used as a hosted option.
+
+For a **new, empty database**, run the contents of [`schema-postgres.sql`](schema-postgres.sql) once using your database provider's SQL editor or `psql`.
+
+**Important:** Do not run the schema file against an existing production database that already contains the Sasta Mall tables or customer data. Back up your database before any schema change.
+
+The `user_sessions` table is created automatically by `connect-pg-simple` when the first session is saved.
+
+### 4. Configure environment variables
+
+Create your local environment file.
 
 **Windows Command Prompt:**
 
@@ -135,185 +121,125 @@ copy .env.example .env
 cp .env.example .env
 ```
 
-Open `.env` and replace `SESSION_SECRET` with a long, random, private value.
+Edit `.env` and set:
 
-**Important:** Never commit your `.env` file to GitHub.
+- `DATABASE_URL`: your PostgreSQL connection string. For Neon, use the connection string provided by Neon and ensure it includes `sslmode=verify-full`.
+- `SESSION_SECRET`: a long, random, private value. Never commit or share it.
+- `NODE_ENV`: use `development` locally and `production` on your production host.
+- `PORT`: optional; defaults to `3000`.
 
-### 4. Initialize the database
+Generate a session secret locally:
 
 ```bash
-npm run db:setup
+node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
 ```
 
-This creates `database/store.db`, builds the database schema, and imports the public starter catalogue.
+Do not paste the generated value into issues, chats, screenshots, or source files.
 
-It does not import existing customer accounts, orders, payment receipts, or support conversations.
+### 5. Create an admin account
 
-### 5. Create the default admin account
+For a **new installation** after the PostgreSQL schema is ready and `.env` is configured, run:
 
 ```bash
 npm run admin:create
 ```
 
-**Default local demo login:**
+The script interactively asks for an admin username, display name, and password. It does not create a public default admin account.
 
-| Field | Value |
-|---|---|
-| Admin page | http://localhost:3000/admin/login.html |
-| Username | `admin` |
-| Password | `admin123123123` |
-
-The admin creation script will not overwrite an existing admin account. If the account already exists, use the password-reset command below.
-
-⚠️ **Security Warning:** These are public demo credentials. Change the admin password before exposing any instance to the public internet. Never reuse this password in a production deployment.
-
-### 6. Start Sasta Mall
-
-```bash
-npm start
-```
-
-Open the customer storefront:
-
-http://localhost:3000/
-
-Open the admin login:
-
-http://localhost:3000/admin/login.html
-
----
-
-## 🛠️ Useful Commands
-
-| Command | Purpose |
-|---|---|
-| `npm start` | Start the application |
-| `npm run db:setup` | Create missing database tables and import starter catalogue |
-| `npm run admin:create` | Create the default admin if it does not already exist |
-| `npm run admin:reset` | Interactively set a new password for the `admin` account |
-
-The database setup command uses `CREATE TABLE IF NOT EXISTS` and `INSERT OR IGNORE`; it does not delete existing records.
-
-Back up your own database before making manual schema or data changes.
-
----
-
-## 📁 Project Structure
-
-```text
-sasta-mall/
-│
-├── admin/                 # Admin panel pages and scripts
-│
-├── database/
-│   ├── schema.sql         # Full database schema
-│   └── seed.sql           # Public starter catalogue only
-│
-├── middleware/            # Authentication middleware
-│
-├── public/                # Customer-facing website and assets
-│   ├── css/
-│   ├── js/
-│   └── uploads/
-│       └── products/      # Public product catalogue media
-│
-├── routes/                # Express API routes
-│
-├── screenshots/           # Project screenshots
-│
-├── .env.example           # Environment variable template
-├── .gitignore
-├── create-admin.js
-├── database.js
-├── package.json
-├── reset-admin-password.js
-├── server.js
-└── setup-database.js
-```
-
----
-
-## 🔐 Admin Password Reset
-
-To change the default admin password, run:
+If you are connecting this code to an **existing populated Sasta Mall database that already has an admin account**, skip account creation. To intentionally change an existing admin password:
 
 ```bash
 npm run admin:reset
 ```
 
-Enter a new password when prompted.
+### 6. Start the application
 
-The password is stored as a bcrypt hash.
+```bash
+npm start
+```
 
----
+Open:
 
-## ⚙️ Configuration
+- Storefront: <http://localhost:3000/>
+- Admin login: <http://localhost:3000/admin/login.html>
 
-| Variable | Description | Default |
-|---|---|---|
-| `PORT` | HTTP port | `3000` |
-| `NODE_ENV` | Runtime environment | `development` |
-| `SESSION_SECRET` | Secret used to sign session cookies | Required; no default |
+If you configured a different `PORT`, use that port in the URLs.
 
----
+## Environment variables
 
-## 🗄️ Database and Uploaded Files
+| Variable | Required | Description |
+|---|---:|---|
+| `DATABASE_URL` | Yes | PostgreSQL connection string |
+| `SESSION_SECRET` | Yes | Secret used to sign session cookies |
+| `NODE_ENV` | Recommended | `development` or `production` |
+| `PORT` | No | HTTP port; defaults to `3000` |
 
-- SQLite database is created locally at `database/store.db`.
-- The local database is intentionally excluded from Git.
-- Public product media is stored under `public/uploads/products/`.
-- Customer payment receipts are stored under `public/uploads/receipts/` and excluded from Git.
-- Private support uploads are excluded from Git.
-- Back up your own database and uploaded files regularly.
+The application refuses to start in production if `SESSION_SECRET` is missing. In production, Express trusts one reverse proxy and session cookies are marked `secure`.
 
----
+## Useful commands
 
-## 🤝 Contributing
+| Command | Purpose |
+|---|---|
+| `npm install` | Install dependencies |
+| `npm start` | Start the application |
+| `npm run admin:create` | Create an admin account in PostgreSQL |
+| `npm run admin:reset` | Reset an admin password in PostgreSQL |
+| `npm run db:migrate:sqlite-to-neon` | One-time legacy SQLite-to-PostgreSQL migration utility |
 
-Contributions are welcome!
+### Legacy SQLite migration utility
 
-If you want to improve Sasta Mall, fix bugs, or add new features:
+The optional `migrate-sqlite-to-neon.js` script is only for migrating a legacy SQLite database into a **completely empty** PostgreSQL database. It expects the source file at `database/store.db`, checks that the target tables are empty, and runs the import in a transaction.
 
-1. Fork this repository.
-2. Create a new feature branch.
-3. Make your changes.
-4. Test your changes.
-5. Submit a Pull Request.
+The project maintainer has already completed the migration for the current Sasta Mall database. **Do not run this utility against the existing populated Neon database.** Keep a separate backup of the source SQLite database before any migration attempt.
 
-Please read [CONTRIBUTING.md](CONTRIBUTING.md) before contributing.
+## Project structure
 
----
+```text
+sasta-mall-dropshipping-platform/
+├── admin/                  # Admin panel pages and scripts
+├── middleware/             # Admin authentication middleware
+├── public/                 # Storefront pages, styles, and browser scripts
+├── routes/                 # Express API route modules
+├── screenshots/            # Screenshot documentation
+├── database-postgres.js    # PostgreSQL connection pool
+├── schema-postgres.sql     # PostgreSQL schema for a new database
+├── migrate-sqlite-to-neon.js # Optional one-time legacy migration
+├── create-admin.js         # PostgreSQL admin creation utility
+├── reset-admin-password.js # PostgreSQL admin password reset utility
+├── server.js               # Express application entry point
+├── .env.example            # Environment variable template
+├── .gitignore
+├── package.json
+└── README.md
+```
 
-## 🔒 Security
+## Uploaded files and deployment storage
 
-Please do not commit:
+The application currently writes uploaded product media, payment receipts, and support attachments to local filesystem paths.
 
-- Passwords or API keys
-- `.env` files
-- Customer personal information
-- Payment receipts
-- Private support attachments
-- Local database files
+- Existing public catalog media are retained in this repository so the current product catalogue can render. New runtime uploads, receipts, and private support files are not committed.
+- A deployment platform with an ephemeral filesystem may delete newly uploaded files when an instance restarts or is redeployed.
+- For production hosting, configure a persistent disk or integrate durable object storage for product media and uploaded files before relying on those files in production.
+- Back up your PostgreSQL database and uploaded files regularly.
 
-For security-related reports, please read [SECURITY.md](SECURITY.md).
+## Security checklist
 
----
+Before deploying publicly:
 
-## 📄 License
+- Set a new, unique `SESSION_SECRET` in the hosting provider's secret/environment settings.
+- Keep `.env` out of Git; commit only `.env.example`.
+- Use a PostgreSQL connection string with certificate verification (`sslmode=verify-full`).
+- Create a unique admin account and use a strong password.
+- Do not commit database dumps, customer information, receipts, private support attachments, or uploaded user files.
+- Use HTTPS in production.
+- Review hosting logs and database backups regularly.
 
-This project is licensed under the **MIT License**.
+See [SECURITY.md](SECURITY.md) for the security reporting policy.
 
-See [LICENSE](LICENSE) for details.
+## Contributing
 
----
+Contributions, bug reports, and suggestions are welcome. Please read [CONTRIBUTING.md](CONTRIBUTING.md) before opening a pull request.
 
-## ⭐ Support the Project
+## License
 
-If you find Sasta Mall useful:
-
-- Give this repository a ⭐ Star.
-- Fork the project.
-- Report bugs and suggest improvements.
-- Contribute new features.
-
-**Thank you for checking out Sasta Mall!** ❤️
+Sasta Mall is released under the [MIT License](LICENSE).

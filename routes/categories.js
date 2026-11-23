@@ -1,18 +1,28 @@
+
 const express = require("express");
-const db = require("../database");
+const db = require("../database-postgres");
 
 const router = express.Router();
 
 // Get all active categories
-router.get("/", (req, res) => {
-    const categories = db.prepare(`
-        SELECT id, name, description
-        FROM categories
-        WHERE active = 1
-        ORDER BY name ASC
-    `).all();
+router.get("/", async (req, res) => {
+    try {
+        const result = await db.query(`
+            SELECT id, name, description
+            FROM categories
+            WHERE active = 1
+            ORDER BY name ASC
+        `);
 
-    res.json(categories);
+        res.json(result.rows);
+    } catch (error) {
+        console.error("Categories fetch failed:", error.message);
+
+        res.status(500).json({
+            success: false,
+            message: "Could not load categories."
+        });
+    }
 });
 
 module.exports = router;

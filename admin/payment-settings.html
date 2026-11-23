@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Payment Settings | Sasta-mall Admin</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#f4f6fa;color:#202939;font-family:Arial,sans-serif}
+header{background:#172033;color:white;padding:18px 26px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+header h2{margin:0;font-size:22px}
+header a{color:white;text-decoration:none}
+main{max-width:950px;margin:30px auto;padding:0 18px}
+.topline{margin-bottom:20px}
+.topline h1{margin:0 0 7px;font-size:26px}
+.muted{color:#667085;font-size:13px;line-height:1.6}
+.panel{background:white;border:1px solid #e7eaf0;border-radius:13px;padding:24px;margin-bottom:20px;box-shadow:0 3px 12px #14233c08}
+.panel h2{font-size:18px;margin:0 0 18px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.field{display:flex;flex-direction:column;gap:7px}
+.field.full{grid-column:1/-1}
+label{font-size:13px;font-weight:700}
+input{width:100%;padding:12px;border:1px solid #d7dce5;border-radius:8px;background:white;font:inherit;font-size:14px}
+input:focus{outline:2px solid #dbeafe;border-color:#2563eb}
+small{color:#667085;font-size:12px;line-height:1.5}
+button{border:0;border-radius:8px;padding:12px 18px;background:#2563eb;color:white;font-weight:700;font-size:14px;cursor:pointer}
+button:disabled{opacity:.6;cursor:wait}
+#message{margin-top:15px;font-size:14px;line-height:1.6}
+.note{padding:13px 15px;border-radius:9px;background:#eff6ff;border:1px solid #bfdbfe;color:#1e40af;font-size:13px;line-height:1.6;margin-bottom:20px}
+.actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+@media(max-width:600px){.grid{grid-template-columns:1fr}.field.full{grid-column:auto}.panel{padding:18px}}
+</style>
+</head>
+<body>
+<header>
+    <h2>Sasta-mall <span style="font-size:13px;color:#b9c7dc">/ Admin</span></h2>
+    <nav style="display:flex;gap:16px;flex-wrap:wrap">
+        <a href="/admin/index.html">Dashboard</a>
+        <a href="/products.html">View Store ↗</a>
+    </nav>
+</header>
+
+<main>
+    <div class="topline">
+        <h1>Payment Settings</h1>
+        <div class="muted">Add or update the payment account details customers see after placing an order.</div>
+    </div>
+
+    <div class="note">
+        A payment method appears on the customer payment page only when its Payment Name, Account Number and Account Name are all filled in.
+        If only one method is completed, only that one will appear — no empty second card or blank space.
+    </div>
+
+    <form id="paymentSettingsForm">
+        <section class="panel">
+            <h2>Payment Method 1</h2>
+            <div class="grid">
+                <div class="field">
+                    <label for="method1_name">Payment Name</label>
+                    <input id="method1_name" maxlength="200" placeholder="e.g. JazzCash, Easypaisa, Bank Transfer">
+                </div>
+                <div class="field">
+                    <label for="method1_number">Account Number</label>
+                    <input id="method1_number" maxlength="200" placeholder="Enter account number">
+                </div>
+                <div class="field full">
+                    <label for="method1_account_name">Account Name</label>
+                    <input id="method1_account_name" maxlength="200" placeholder="Enter account holder name">
+                </div>
+            </div>
+        </section>
+
+        <section class="panel">
+            <h2>Payment Method 2</h2>
+            <div class="grid">
+                <div class="field">
+                    <label for="method2_name">Payment Name</label>
+                    <input id="method2_name" maxlength="200" placeholder="e.g. JazzCash, Easypaisa, Bank Transfer">
+                </div>
+                <div class="field">
+                    <label for="method2_number">Account Number</label>
+                    <input id="method2_number" maxlength="200" placeholder="Enter account number">
+                </div>
+                <div class="field full">
+                    <label for="method2_account_name">Account Name</label>
+                    <input id="method2_account_name" maxlength="200" placeholder="Enter account holder name">
+                </div>
+            </div>
+        </section>
+
+        <div class="actions">
+            <button type="submit" id="saveButton">Save Payment Settings</button>
+            <span class="muted">Changes will appear on the customer payment page.</span>
+        </div>
+        <div id="message" role="status" aria-live="polite"></div>
+    </form>
+</main>
+
+<script>
+(() => {
+    const form = document.getElementById("paymentSettingsForm");
+    const message = document.getElementById("message");
+    const saveButton = document.getElementById("saveButton");
+    const fields = [
+        "method1_name", "method1_number", "method1_account_name",
+        "method2_name", "method2_number", "method2_account_name"
+    ];
+
+    async function request(url, options = {}) {
+        const response = await fetch(url, {
+            credentials: "same-origin",
+            ...options,
+            headers: {
+                ...(options.body ? { "Content-Type": "application/json" } : {}),
+                ...(options.headers || {})
+            }
+        });
+        if (response.status === 401) {
+            window.location.replace("/admin/login.html");
+            throw new Error("Admin login required.");
+        }
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(data.message || "Request failed.");
+        return data;
+    }
+
+    async function loadSettings() {
+        try {
+            const result = await request("/api/payment-settings/admin");
+            fields.forEach((field) => {
+                document.getElementById(field).value = result.settings?.[field] || "";
+            });
+        } catch (error) {
+            message.style.color = "#b42318";
+            message.textContent = error.message || "Could not load payment settings.";
+        }
+    }
+
+    form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        saveButton.disabled = true;
+        saveButton.textContent = "Saving...";
+        message.textContent = "";
+
+        const settings = {};
+        fields.forEach((field) => {
+            settings[field] = document.getElementById(field).value.trim();
+        });
+
+        try {
+            const result = await request("/api/payment-settings/admin", {
+                method: "PUT",
+                body: JSON.stringify(settings)
+            });
+            message.style.color = "#067647";
+            message.textContent = result.message || "Payment settings saved successfully.";
+        } catch (error) {
+            message.style.color = "#b42318";
+            message.textContent = error.message || "Could not save payment settings.";
+        } finally {
+            saveButton.disabled = false;
+            saveButton.textContent = "Save Payment Settings";
+        }
+    });
+
+    loadSettings();
+})();
+</script>
+</body>
+</html>

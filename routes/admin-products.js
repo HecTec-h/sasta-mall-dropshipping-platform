@@ -10,7 +10,7 @@ const multer = require("multer");
 
 
 
-const db = require("../database");
+const db = require("../database-postgres");
 
 const { requireAdmin } = require("../middleware/admin-auth");
 

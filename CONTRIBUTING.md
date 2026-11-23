@@ -1,40 +1,40 @@
 # Contributing to Sasta Mall
 
-Thank you for considering a contribution!
+Thank you for your interest in contributing.
 
-## Before you start
+## Before opening a pull request
 
-1. Read the README and follow the local installation steps.
+1. Read the project README and follow the PostgreSQL setup instructions.
 2. Check existing issues and pull requests to avoid duplicate work.
-3. For a significant feature, open an issue first to discuss the proposed change.
+3. For significant changes, open an issue first to discuss the approach.
 
 ## Development workflow
 
-1. Fork the repository.
-2. Clone your fork.
-3. Create a feature branch:
+1. Fork the repository and clone your fork.
+2. Create a focused branch:
 
    ```bash
    git checkout -b feature/short-description
    ```
 
-4. Install dependencies and configure `.env` as described in the README.
-5. Make focused changes and test the affected customer and admin flows.
+3. Install dependencies and configure a private `.env` file.
+4. Make a focused change and test the affected customer and admin flows.
+5. Document any PostgreSQL schema changes in `schema-postgres.sql`.
 6. Commit with a clear message:
 
    ```bash
    git add .
-   git commit -m "Add short description"
+   git commit -m "Describe the change"
    ```
 
-7. Push your branch and open a Pull Request against `main`.
+7. Push your branch and open a pull request against `main`.
 
 ## Pull request checklist
 
-- [ ] The change has a clear description and purpose.
-- [ ] Existing customer and admin flows have been checked.
-- [ ] No `.env`, passwords, customer records, database files, receipts, or private uploads are included.
-- [ ] Database changes are additive and documented where possible.
+- [ ] The change has a clear purpose and description.
+- [ ] Customer and admin flows affected by the change have been tested.
+- [ ] No `.env`, secrets, database dumps, customer records, receipts, or private uploads are included.
+- [ ] Database changes are documented and safe for existing data.
 - [ ] Screenshots are included for significant UI changes.
 
 Please keep pull requests focused and avoid unrelated formatting changes.

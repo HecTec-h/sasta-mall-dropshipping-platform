@@ -96,96 +96,26 @@
             </div>
 
 
-            <!-- JAZZCASH -->
+            <!-- PAYMENT METHODS: loaded from admin settings -->
+            <div id="paymentMethods" aria-live="polite"></div>
 
-            <div style="
-                background:#fff7ed;
-                border:1px solid #fed7aa;
-                border-radius:12px;
-                padding:25px;
-                margin-bottom:25px;
-            ">
-
-                <h2 style="
-                    margin-top:0;
-                    color:#9a3412;
-                ">
-                    JazzCash Payment
-                </h2>
-
-                <p>
-                    Please send the exact order amount to our JazzCash account.
-                </p>
-
-                <div style="
-                    background:white;
-                    border-radius:10px;
-                    padding:18px;
-                    margin-top:15px;
-                ">
-
-                    <p>
-                        <strong>JazzCash Number:</strong>
-                        <span id="jazzCashNumber">
-                            03XX-XXXXXXX
-                        </span>
-                    </p>
-
-                    <p style="margin-bottom:0;">
-                        <strong>Account Name:</strong>
-                        <span id="jazzCashName">
-                            Sasta-mall
-                        </span>
-                    </p>
-
-                </div>
-
-            </div>
-
-
-            <!-- INSTRUCTIONS -->
-
-            <div style="
+            <!-- PAYMENT INSTRUCTIONS -->
+            <div id="paymentInstructions" style="
+                display:none;
                 background:#eff6ff;
                 border:1px solid #bfdbfe;
                 border-radius:12px;
                 padding:20px;
                 margin-bottom:25px;
             ">
-
-                <h3 style="margin-top:0;">
-                    How to Pay
-                </h3>
-
-                <ol style="
-                    line-height:1.8;
-                    padding-left:22px;
-                ">
-
-                    <li>
-                        Open your JazzCash app or use JazzCash service.
-                    </li>
-
-                    <li>
-                        Send the exact amount shown above.
-                    </li>
-
-                    <li>
-                        Complete the transaction.
-                    </li>
-
-                    <li>
-                        Take a screenshot of your payment receipt.
-                    </li>
-
-                    <li>
-                        Upload the receipt below.
-                    </li>
-
+                <h3 style="margin-top:0;">How to Pay</h3>
+                <ol style="line-height:1.8;padding-left:22px;">
+                    <li>Open the app or service for the payment method you selected.</li>
+                    <li>Send the exact order amount to the account shown above.</li>
+                    <li>Complete the transaction and take a screenshot of the payment receipt.</li>
+                    <li>Upload the receipt below.</li>
                 </ol>
-
             </div>
-
 
             <!-- RECEIPT -->
 
@@ -199,7 +129,7 @@
                 </h2>
 
                 <p style="color:#6b7280;">
-                    Upload a clear screenshot or photo of your JazzCash payment receipt.
+                    Upload a clear screenshot or photo of your payment receipt.
                 </p>
 
 
@@ -303,6 +233,78 @@
 <div class="order-success-overlay" id="orderSuccessOverlay" role="dialog" aria-modal="true" aria-labelledby="orderSuccessTitle"><div class="order-success-card"><div class="order-success-mark">✓</div><h2 id="orderSuccessTitle">Your order has been placed successfully.</h2><p>For more information, visit your order status. Thanks.</p><button type="button" id="viewOrderStatusButton">View Order Status</button></div></div>
 
 <script>
+
+// Load payment methods configured by the administrator.
+// Empty or incomplete slots are not rendered, so they take up no space.
+async function loadPaymentMethods() {
+    const container = document.getElementById("paymentMethods");
+    const instructions = document.getElementById("paymentInstructions");
+
+    const escapeHTML = (value) => String(value ?? "").replace(/[&<>"']/g, (char) => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+    })[char]);
+
+    try {
+        const response = await fetch("/api/payment-settings", {
+            credentials: "same-origin"
+        });
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+            throw new Error(result.message || "Could not load payment details.");
+        }
+
+        const methods = Array.isArray(result.methods) ? result.methods : [];
+
+        if (methods.length === 0) {
+            container.innerHTML = `
+                <div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:12px;padding:20px;margin-bottom:25px;color:#9a3412;line-height:1.6">
+                    <strong>Payment details are currently unavailable.</strong>
+                    Please contact customer support before making a payment.
+                </div>
+            `;
+            instructions.style.display = "none";
+            return;
+        }
+
+        container.innerHTML = methods.map((method) => `
+            <div style="
+                background:#fff7ed;
+                border:1px solid #fed7aa;
+                border-radius:12px;
+                padding:25px;
+                margin-bottom:25px;
+            ">
+                <h2 style="margin-top:0;color:#9a3412;">
+                    ${escapeHTML(method.name)} Payment
+                </h2>
+                <p>Please send the exact order amount to the following account.</p>
+                <div style="background:white;border-radius:10px;padding:18px;margin-top:15px;overflow-wrap:anywhere">
+                    <p>
+                        <strong>Account Number:</strong>
+                        ${escapeHTML(method.number)}
+                    </p>
+                    <p style="margin-bottom:0">
+                        <strong>Account Name:</strong>
+                        ${escapeHTML(method.accountName)}
+                    </p>
+                </div>
+            </div>
+        `).join("");
+
+        instructions.style.display = "block";
+    } catch (error) {
+        console.error("Payment details load error:", error);
+        container.innerHTML = `
+            <div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:12px;padding:20px;margin-bottom:25px;color:#9a3412">
+                Could not load payment details. Please refresh the page or contact customer support.
+            </div>
+        `;
+        instructions.style.display = "none";
+    }
+}
+
+loadPaymentMethods();
 
 /* =========================================
    GET ORDER ID

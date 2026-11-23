@@ -1,5 +1,450 @@
+
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Help - Sasta-mall</title><link rel="stylesheet" href="/css/style.css"></head>
-<body><header class="site-header"><a class="logo" href="/">Sasta-mall</a><nav><a href="/">Home</a><a href="/products.html">Products</a><a href="/help.html">Help</a></nav><div class="header-actions"><a href="/login.html">Login</a><a href="/signup.html">Create Account</a><a href="/cart.html">🛒 Cart</a></div></header>
-<main class="help-page"><div class="help-heading-row"><h1>Instructions:</h1><label class="help-language-label">Language <select id="helpLanguage" aria-label="Instructions language"><option value="en">English</option><option value="roman">Roman Urdu</option></select></label></div><section id="helpInstructions" class="help-instructions" aria-live="polite"></section></main>
-<footer><p>© 2026 Sasta-mall</p></footer><script src="/js/auth-ui.js"></script><script>document.getElementById("helpLanguage").addEventListener("change", function(){document.documentElement.lang=this.value==="roman"?"ur":"en";});</script></body></html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Help - Sasta-mall</title>
+    <link rel="stylesheet" href="/css/style.css">
+
+    <style>
+        .help-page {
+            width: min(92%, 1200px);
+            margin: 45px auto;
+            min-height: 55vh;
+        }
+
+        .help-heading-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            padding-bottom: 22px;
+            border-bottom: 1px solid #dce3ed;
+        }
+
+        .help-heading-row h1 {
+            margin: 0;
+            font-size: 32px;
+        }
+
+        .help-language-label {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+        }
+
+        .help-language-label select {
+            padding: 12px 18px;
+            border: 1px solid #d5dfed;
+            border-radius: 12px;
+            background: white;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        .help-instructions {
+            display: grid;
+            gap: 20px;
+            padding: 28px 0 45px;
+        }
+
+        .help-intro {
+            background: #edf5ff;
+            border: 1px solid #cfe2ff;
+            border-radius: 14px;
+            padding: 22px;
+            line-height: 1.8;
+            color: #243b5a;
+        }
+
+        .help-card {
+            background: white;
+            border: 1px solid #e0e7f0;
+            border-radius: 14px;
+            padding: 24px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.035);
+        }
+
+        .help-card h2 {
+            color: #174ea6;
+            font-size: 21px;
+            margin: 0 0 14px;
+        }
+
+        .help-card h3 {
+            font-size: 17px;
+            margin: 20px 0 8px;
+            color: #263b59;
+        }
+
+        .help-card p {
+            color: #526174;
+            line-height: 1.8;
+            margin: 0 0 10px;
+        }
+
+        .help-card ul {
+            padding-left: 24px;
+            margin: 12px 0;
+        }
+
+        .help-card li {
+            color: #526174;
+            line-height: 1.8;
+            margin-bottom: 10px;
+        }
+
+        .help-note {
+            background: #f1f6ff;
+            border-left: 4px solid #2563eb;
+            padding: 15px 18px;
+            border-radius: 7px;
+            margin-top: 16px;
+        }
+
+        @media (max-width: 600px) {
+            .help-page {
+                width: 92%;
+                margin: 28px auto;
+            }
+
+            .help-heading-row h1 {
+                font-size: 26px;
+            }
+
+            .help-card {
+                padding: 18px;
+            }
+
+            .help-card h2 {
+                font-size: 19px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header class="site-header">
+    <a class="logo" href="/">Sasta-mall</a>
+
+    <nav>
+        <a href="/">Home</a>
+        <a href="/products.html">Products</a>
+        <a href="/help.html">Help</a>
+    </nav>
+
+    <div class="header-actions">
+        <a href="/login.html">Login</a>
+        <a href="/signup.html">Create Account</a>
+        <a href="/cart.html">🛒 Cart</a>
+    </div>
+</header>
+
+<main class="help-page">
+
+    <div class="help-heading-row">
+        <h1 id="helpTitle">Instructions</h1>
+
+        <label class="help-language-label">
+            Language
+
+            <select id="helpLanguage" aria-label="Instructions language">
+                <option value="en">English</option>
+                <option value="roman">Roman Urdu</option>
+            </select>
+        </label>
+    </div>
+
+    <section
+        id="helpInstructions"
+        class="help-instructions"
+        aria-live="polite">
+    </section>
+
+</main>
+
+<footer>
+    <p>© 2026 Sasta-mall</p>
+</footer>
+
+<script src="/js/auth-ui.js"></script>
+
+<script>
+const helpContent = {
+
+    en: `
+        <div class="help-intro">
+            <h2>Welcome to Sasta Mall!</h2>
+            <p>
+                This guide will help you understand how to use our
+                platform, place orders, and track your purchases.
+                Please read the instructions below to get started.
+            </p>
+        </div>
+
+        <div class="help-card">
+            <h2>1. Account Registration</h2>
+            <p>
+                You must create an account before placing an order.
+                Please sign up or log in to access the ordering
+                features of Sasta Mall.
+            </p>
+        </div>
+
+        <div class="help-card">
+            <h2>2. Password Recovery</h2>
+            <p>
+                Currently, a password recovery system is not
+                available. Please make sure to remember your
+                account password.
+            </p>
+        </div>
+
+        <div class="help-card">
+            <h2>3. Browse Products</h2>
+            <p>
+                You can explore available products from the
+                Products section. You can also browse products
+                through the Categories section in your dashboard.
+            </p>
+        </div>
+
+        <div class="help-card">
+            <h2>4. Check Your Order Status</h2>
+            <p>
+                After placing an order, you can check its progress
+                from the Order Status section in your dashboard.
+                You can view all your order updates and available
+                actions in this section.
+            </p>
+        </div>
+
+        <div class="help-card">
+            <h2>5. Order Decision Process</h2>
+            <p>
+                After placing your order, it enters the decision
+                process. Your order will be reviewed and marked
+                as either Payment Accepted or Payment Rejected.
+            </p>
+
+            <h3>Payment Rejected</h3>
+            <p>
+                If your order is rejected, it will remain in the
+                Payment Rejected section and will not proceed
+                to the next stage.
+            </p>
+
+            <h3>Payment Accepted</h3>
+            <p>
+                If your order is accepted, it will move forward
+                to the next stage. You will then need to wait
+                for your order to be shipped.
+            </p>
+        </div>
+
+        <div class="help-card">
+            <h2>6. Edit Your Delivery Address</h2>
+            <p>
+                Before your order moves to the Shipped stage,
+                you can edit your delivery address.
+            </p>
+
+            <p>
+                Simply click the Order Details button for the
+                relevant order and update your delivery address.
+            </p>
+
+            <div class="help-note">
+                <strong>Important:</strong>
+                You do not need to visit another section of the
+                website. You can manage your order and update
+                your address directly from the Order Status section.
+            </div>
+        </div>
+
+        <div class="help-card">
+            <h2>7. Track Your Shipment</h2>
+            <p>
+                Once your order has been shipped, you can check
+                its delivery progress from the Tracking section
+                in your dashboard.
+            </p>
+        </div>
+
+        <div class="help-card">
+            <h2>8. Order Delivered</h2>
+            <p>
+                Once your order is delivered, it will automatically
+                move to the Delivered section in your dashboard.
+                You can view your completed order there.
+            </p>
+        </div>
+
+        <div class="help-card">
+            <h2>Need Help?</h2>
+            <p>
+                If you have any questions or need assistance,
+                please use the available Customer Support option
+                on Sasta Mall.
+            </p>
+        </div>
+    `,
+
+    roman: `
+        <div class="help-intro">
+            <h2>Sasta Mall mein Khush Aamdeed!</h2>
+            <p>
+                Ye guide aapko platform use karne, order place
+                karne aur apne order ki progress check karne
+                mein madad degi. Shuru karne ke liye neeche
+                di gayi hidayaat parhein.
+            </p>
+        </div>
+
+        <div class="help-card">
+            <h2>1. Account Banana</h2>
+            <p>
+                Order place karne se pehle account banana
+                zaroori hai. Sasta Mall ki ordering facilities
+                use karne ke liye pehle sign up karein ya apne
+                account mein login karein.
+            </p>
+        </div>
+
+        <div class="help-card">
+            <h2>2. Password Recovery</h2>
+            <p>
+                Filhaal password recovery ka system available
+                nahi hai. Is liye apne account ka password
+                yaad rakhein.
+            </p>
+        </div>
+
+        <div class="help-card">
+            <h2>3. Products Dekhna</h2>
+            <p>
+                Aap available products ko Products section
+                mein dekh sakte hain. Is ke ilawa apne dashboard
+                ke Categories section se bhi products browse
+                kar sakte hain.
+            </p>
+        </div>
+
+        <div class="help-card">
+            <h2>4. Apne Order Ka Status Check Karna</h2>
+            <p>
+                Order place karne ke baad aap apne dashboard
+                ke Order Status section mein uski progress
+                check kar sakte hain. Aapko apne order ki tamam
+                updates aur available options isi section
+                mein milenge.
+            </p>
+        </div>
+
+        <div class="help-card">
+            <h2>5. Order Ka Decision Process</h2>
+            <p>
+                Order place hone ke baad woh decision process
+                mein chala jata hai. Aapke order ko review
+                karne ke baad usay Payment Accepted ya
+                Payment Rejected mark kiya jayega.
+            </p>
+
+            <h3>Payment Rejected (Order Reject Hona)</h3>
+            <p>
+                Agar aapka order reject ho jata hai, to woh
+                Payment Rejected section mein hi rahega aur
+                aglay stage mein nahi jayega.
+            </p>
+
+            <h3>Payment Accepted (Order Accept Hona)</h3>
+            <p>
+                Agar aapka order accept ho jata hai, to woh
+                aglay stage mein chala jayega. Is ke baad
+                aapko apne order ki shipment ka intezar
+                karna hoga.
+            </p>
+        </div>
+
+        <div class="help-card">
+            <h2>6. Delivery Address Edit Karna</h2>
+            <p>
+                Aap apne order ke Shipped stage mein jane
+                se pehle apna delivery address edit kar sakte hain.
+            </p>
+
+            <p>
+                Is ke liye usi order ke Order Details button
+                par click karein aur apna delivery address
+                update kar dein.
+            </p>
+
+            <div class="help-note">
+                <strong>Zaroori Baat:</strong>
+                Aapko website ke kisi doosray section mein
+                jane ki zaroorat nahi. Aap apne order ki
+                details aur delivery address Order Status
+                section se hi manage kar sakte hain.
+            </div>
+        </div>
+
+        <div class="help-card">
+            <h2>7. Shipment Track Karna</h2>
+            <p>
+                Jab aapka order ship ho jaye, to aap apne
+                dashboard ke Tracking section mein uski
+                delivery progress check kar sakte hain.
+            </p>
+        </div>
+
+        <div class="help-card">
+            <h2>8. Order Deliver Ho Jana</h2>
+            <p>
+                Jab aapka order deliver ho jaye, to woh
+                automatically aapke dashboard ke Delivered
+                section mein chala jayega. Aap apna completed
+                order wahan dekh sakte hain.
+            </p>
+        </div>
+
+        <div class="help-card">
+            <h2>Mazeed Madad Chahiye?</h2>
+            <p>
+                Agar aapko koi sawal ho ya madad ki zaroorat
+                ho, to Sasta Mall ka available Customer
+                Support option use karein.
+            </p>
+        </div>
+    `
+};
+
+const languageSelect = document.getElementById("helpLanguage");
+const instructions = document.getElementById("helpInstructions");
+const helpTitle = document.getElementById("helpTitle");
+
+function showHelp(language) {
+    instructions.innerHTML = helpContent[language];
+
+    if (language === "roman") {
+        helpTitle.textContent = "Hidayaat";
+        document.documentElement.lang = "ur-Latn";
+    } else {
+        helpTitle.textContent = "Instructions";
+        document.documentElement.lang = "en";
+    }
+}
+
+languageSelect.addEventListener("change", function () {
+    showHelp(this.value);
+});
+
+// English is displayed by default.
+showHelp("en");
+</script>
+
+</body>
+</html>
